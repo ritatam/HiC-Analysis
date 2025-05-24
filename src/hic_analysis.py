@@ -137,18 +137,33 @@ if __name__ == "__main__":
         fd.write(",".join(header) + '\n')
         fd.close()
 
-    print(f"Total Link\t{total_link}")
-    print(f"CIS Link\t{cis_link}\t{round(cis_link/total_link, 2)*100}%")
-    print(f"Trans Link\t{trans_link}\t{round(trans_link/total_link, 2)*100}%")
-    print(f"HAP1_Internal\t{ctg1_internal}\t{round(ctg1_internal/total_link, 2)*100}%")
-    print(f"HAP2_Internal\t{ctg2_internal}\t{round(ctg2_internal/total_link, 2)*100}%")
-    print(f"HAP1 Link\t{hap1_link}\t{round(hap1_link/total_link, 2)*100}%")
-    print(f"HAP2 Link\t{hap2_link}\t{round(hap2_link/total_link, 2)*100}%")
-    print(f"CROSS HAP Link\t{crossing_links}\t{round(crossing_links/total_link, 2)*100}%")
-    print(f"EXT-EXT Link\t{ext_link}\t{round(ext_link/total_link, 2)*100}%")
-    print(f"EXT-HAP1 Link\t{ext1_link}\t{round(ext1_link/total_link, 2)*100}%")
-    print(f"EXT-HAP2 Link\t{ext2_link}\t{round(ext2_link/total_link, 2)*100}%")
-    print(f"EXT_Internal\t{ext_internal}\t{round(ext_internal/total_link, 2)*100}%")
+
+    # generate HiC links report
+    report_lines = []
+
+    report_lines.append(f"Total Hi-C links\t{total_link}")
+    within_hap_links = hap1_link + hap2_link + ctg1_internal + ctg2_internal
+    report_lines.append(f"\nWithin-haplotype links\t{within_hap_links}\t{within_hap_links/total_link*100:.2f}%")
+    report_lines.append(f"\tCis-chromosome")
+    report_lines.append(f"\t\tHAP1\t{ctg1_internal}\t{ctg1_internal/total_link*100:.2f}%")
+    report_lines.append(f"\t\tHAP2\t{ctg2_internal}\t{ctg2_internal/total_link*100:.2f}%")
+    report_lines.append(f"\tTrans-chromosome")
+    report_lines.append(f"\t\tHAP1\t{hap1_link}\t{hap1_link/total_link*100:.2f}%")
+    report_lines.append(f"\t\tHAP2\t{hap2_link}\t{hap2_link/total_link*100:.2f}%")
+    report_lines.append(f"\nCross-haplotype links\t{crossing_links}\t{crossing_links/total_link*100:.2f}%")
+
+    report_lines.append(f"\nLinks to unplaced contigs (na.lst)")
+    report_lines.append(f"EXT-EXT Link\t{ext_link}\t{ext_link/total_link*100:.2f}%")
+    report_lines.append(f"EXT-HAP1 Link\t{ext1_link}\t{ext1_link/total_link*100:.2f}%")
+    report_lines.append(f"EXT-HAP2 Link\t{ext2_link}\t{ext2_link/total_link*100:.2f}%")
+    report_lines.append(f"EXT_Internal\t{ext_internal}\t{ext_internal/total_link*100:.2f}%\n")
+
+    for line in report_lines:
+        print(line)
+
+    with open(f"{out_dir}/links_report.txt", "w") as f:
+        for line in report_lines:
+            f.write(line + "\n")
 
 
     clen_dict = {}
